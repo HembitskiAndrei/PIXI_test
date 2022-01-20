@@ -1,7 +1,7 @@
 import {Sprite} from "@pixi/sprite";
 
-export const createBackground = (app) => {
-    const background = Sprite.from('./src/assets/textures/background.png');
+export const createBackground = (texture, app) => {
+    const background = new Sprite(texture);
 
     background.anchor.set(0.5);
 
