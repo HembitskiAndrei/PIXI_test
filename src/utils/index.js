@@ -1,4 +1,4 @@
 export { createBackground } from "./createBackground";
 export { createAsteroidField } from "./createAsteroidField";
 export { timeFormat } from "./timeFormat";
-export { generatePositionsArray, getRandomPosition } from "./generatePositionsArray";
+export { generatePositionsArray, getRandomPosition, getRandomInt } from "./generatePositionsArray";

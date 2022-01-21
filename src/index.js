@@ -1,6 +1,11 @@
 import "./css/style.css";
 import {Application} from "@pixi/app";
 import {Loader} from "@pixi/loaders";
+import { gsap } from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+import { CustomEase } from "gsap/CustomEase";
+import {DisplayObject} from "@pixi/display";
 import {createBackground} from "./utils/index";
 import {createAsteroidField} from "./utils/index";
 import Spaceship from "./components/Spaceship";
@@ -11,7 +16,6 @@ import ExplodeParticles from "./components/ExplodeParticles";
 import RocketFlame from "./components/RocketFlame";
 import Mouse from "pixi.js-mouse";
 import {gameConfig} from "./utils/gameConfig";
-import * as TWEEN from "tween.js";
 
 const app = new Application({
     width: 1280,
@@ -20,14 +24,6 @@ const app = new Application({
     antialiasing: true,
 });
 document.body.appendChild(app.view);
-
-const position = {x: 100, y: 0}
-const tween = new TWEEN.Tween(position)
-    .to({x: 200}, 1000)
-    .onUpdate(function(val){
-        // console.log(val)
-    })
-    .start();
 
 const loader = new Loader();
 loader.add("asteroid", "./src/assets/textures/asteroid.png")
@@ -53,13 +49,19 @@ loader.load((loader, resources) => {
         ammoGUI.SetText(`${e.detail.ammo}`);
     })
 
-    timerGUI.timer.on("end", (elapsed) => {
+    timerGUI.timer.on("end", () => {
         endGameBanner.ShowBanner("YOU LOSE");
     });
 
     const explodeParticles = new ExplodeParticles(app);
 
     rocketFlame.SetParent(spaceShip.GetContainer());
+
+    PixiPlugin.registerPIXI({
+        DisplayObject
+    });
+    gsap.registerPlugin(MotionPathPlugin,PixiPlugin);
+    gsap.registerPlugin(CustomEase);
 
     Mouse.events.on("released", null, () => {
         if (!spaceShip.isReady) {
@@ -69,17 +71,15 @@ loader.load((loader, resources) => {
             spaceShip.Reset();
             ammoGUI.SetText(`${spaceShip.ammo}`);
             asteroids.forEach(asteroid => {
+                asteroid.animation.kill();
                 asteroid.Destroy();
             })
-            asteroids = createAsteroidField(resources["asteroid"].texture, app);
+            asteroids = createAsteroidField(resources["asteroid"].texture, gsap, app);
         }
     });
 
     app.ticker.add(delta => {
         const speed = 5 * delta;
-
-        TWEEN.update();
-        console.log(position)
 
         explodeParticles.Update(app.ticker.deltaMS * 0.001);
         rocketFlame.Update(app.ticker.deltaMS * 0.001);
@@ -103,6 +103,7 @@ loader.load((loader, resources) => {
                         explodeParticles.Start(asteroid.asteroidSprite.x, asteroid.asteroidSprite.y)
                         bullet.Destroy();
                         spaceShip.bullets.splice(bulletIndex, 1);
+                        asteroid.animation.kill();
                         asteroid.Destroy();
                         asteroids.splice(asteroidIndex, 1);
                         if (asteroids.length === 0) {

@@ -10,8 +10,6 @@ export default class Asteroid {
         this.asteroidSprite.x = x;
         this.asteroidSprite.y = y;
 
-        this.asteroidSprite.angle = 360 * Math.random();
-
         this.asteroidSprite.interactive = true;
         this.asteroidSprite.hitArea = new Circle(0, 0, 70);
 
