@@ -27,7 +27,7 @@ document.body.appendChild(app.view);
 
 const loader = new Loader();
 loader.add("asteroid", "./src/assets/textures/asteroid.png")
-loader.add("spaceship", "./src/assets/textures/spaceShip.png");
+loader.add("spaceship", "./src/assets/textures/spaceship.png");
 loader.add("background", "./src/assets/textures/background.png");
 
 loader.load((loader, resources) => {
